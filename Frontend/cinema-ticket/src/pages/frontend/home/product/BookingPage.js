@@ -118,7 +118,7 @@ const BookingPage = () => {
 
     const bookingInfo = {
       movieId: selectedMovie.id,
-      title: selectedMovie.title,
+      title: selectedMovie.name,
       image: selectedMovie.image,
       branchId: Number(selectedBranchId),
       showDate: selectedDate,

@@ -49,4 +49,37 @@ public class AgeRatingServiceImpl implements AgeRatingService {
     public void deleteAgeRating(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public void softDeleteAgeRating(Long id) {
+        repository.findById(id).ifPresent(ageRating -> {
+            ageRating.setDeleted(true);
+            repository.save(ageRating);
+        });
+    }
+
+    @Override
+    public void restoreAgeRating(Long id) {
+        repository.findById(id).ifPresent(ageRating -> {
+            ageRating.setDeleted(false);
+            repository.save(ageRating);
+        });
+    }
+
+    @Override
+    public void destroyAgeRating(Long id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    public List<AgeRating> getTrashedAgeRatings() {
+        return repository.findByDeleted(true);
+    }
+
+    // // Lọc lại getAllAgeRatings để chỉ trả về bản ghi chưa bị xóa
+    // @Override
+    // public List<AgeRating> getAllAgeRatings() {
+    // return repository.findByDeleted(false);
+    // }
+
 }

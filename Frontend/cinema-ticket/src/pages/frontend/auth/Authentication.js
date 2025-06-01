@@ -23,9 +23,11 @@ export const register = async (formData) => {
 export const login = async (email, password) => { 
   try {
     const response = await axios.post(`${API_URL}/login`, { email, password });
+    console.log( response.data);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userName', response.data.username);
+      localStorage.setItem('userId', response.data.id);
       console.log(localStorage.getItem('userName'));
       
       const imageFileName = response.data.image;
@@ -33,8 +35,19 @@ export const login = async (email, password) => {
       localStorage.setItem('userImage', imageUrl);  
 
       localStorage.setItem('userEmail', email);
+      localStorage.setItem('token', response.data.token);
+
+      const currentUser = {
+        id: response.data.id,
+        username: response.data.username,
+        image: response.data.image ? `http://localhost:8080/${response.data.image}` : '',
+        email: email,
+        token: response.data.token,
+      };
+
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
     }
-    return { success: true, message: 'Đăng nhập thành công!' };
+    return { success: true, message: 'Đăng nhập thành công!' ,data: response.data };
   } catch (error) {
     if (error.response) {
       return { success: false, message: error.response.data.message || error.response.data };

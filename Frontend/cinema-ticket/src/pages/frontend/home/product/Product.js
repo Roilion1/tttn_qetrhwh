@@ -22,23 +22,16 @@ const Product = () => {
 
   const fetchMovies = async (endpoint, setState) => {
     try {
-      const res = await axios.get(`${Api}/movies/${endpoint}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await axios.get(`${Api}/movies/${endpoint}`, { headers });
       const movies = res.data;
 
       const moviesWithShowtimes = await Promise.all(
         movies.map(async (movie) => {
           try {
-            const showtimeRes = await axios.get(
-              `${Api}/showtimes/movie/${movie.id}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-
+            const showtimeRes = await axios.get(`${Api}/showtimes/movie/${movie.id}`, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
             const showtimes = showtimeRes.data;
 
             if (showtimes.length > 0) {

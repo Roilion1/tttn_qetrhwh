@@ -61,7 +61,9 @@ public class AuthController {
 
             // Thiết lập các trường mặc định
             user.setCreatedAt(new Date());
-            user.setRole("USER");
+            if (user.getRole() == null || user.getRole().isBlank()) {
+                user.setRole("USER");
+            }
             user.setStatus(1);
             user.setImage("user-uploads/" + fileName);
 
@@ -88,7 +90,8 @@ public class AuthController {
                 // Tạo token JWT
                 String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
                 return ResponseEntity
-                        .ok(new JwtResponse("✅ Login successful", token, user.getImage(), user.getUsername()));
+                        .ok(new JwtResponse("✅ Login successful", token, user.getImage(), user.getUsername(),
+                                user.getId(), user.getRole()));
             } else {
                 return ResponseEntity.status(401).body("❌ Invalid password");
             }

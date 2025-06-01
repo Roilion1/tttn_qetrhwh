@@ -11,26 +11,26 @@ import java.util.Date;
 @Table(name = "age_rating")
 public class AgeRating {
 
-    public enum Rating {
-        P, C13, C16, C18
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String description;
+
+    // ✅ Đổi từ enum sang String để người dùng nhập tùy ý
+    @Column(name = "rating", nullable = false)
+    private String rating;
+
     private int created_by;
     private int updated_by;
     private Date created_at;
     private Date updated_at;
     private int status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "rating", nullable = false)
-    private Rating rating;
+    @Column(name = "deleted")
+    private boolean deleted = false;
 
     // ===== Getter và Setter =====
-
     public Long getId() {
         return id;
     }
@@ -39,20 +39,20 @@ public class AgeRating {
         this.id = id;
     }
 
-    public Rating getRating() {
-        return rating;
-    }
-
-    public void setRating(Rating rating) {
-        this.rating = rating;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
     }
 
     public int getCreated_by() {
@@ -93,5 +93,13 @@ public class AgeRating {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

@@ -20,15 +20,18 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(consumes = "multipart/form-data")
-    public User createUser(@ModelAttribute User user, @RequestParam("file") MultipartFile file) throws IOException {
-        if (!file.isEmpty()) {
+    public User createUser(@ModelAttribute User user,
+            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        if (file != null && !file.isEmpty()) {
             String uploadDir = "images/user-uploads/";
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             File dest = new File(uploadDir + fileName);
-            dest.getParentFile().mkdirs(); 
+            dest.getParentFile().mkdirs();
             file.transferTo(dest);
 
             user.setImage("/images/user-uploads/" + fileName);
+        } else {
+            user.setImage(null); // hoặc giữ nguyên
         }
         return userService.saveUser(user);
     }

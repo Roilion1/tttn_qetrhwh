@@ -3,36 +3,46 @@ package com.example.cinema.entity;
 import jakarta.persistence.*;
 import java.util.Date;
 
-//////////////////////////////////////////
-////Ghế trong phòng chiếu
-/////////////////////////////////////////
-
 @Entity
 @Table(name = "seat")
 public class Seat {
 
     public enum SeatType {
-        NORMAL, // Ghế bình thường
-        VIP, // Ghế VIP
-        COUPLE // Ghế đôi
+        NORMAL, VIP, COUPLE
+    }
+
+    public enum SeatStatus {
+        AVAILABLE, RESERVED, BOOKED
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String seatNumber;
+
+    @Enumerated(EnumType.STRING)
     private SeatType seatType;
+
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private SeatStatus status = SeatStatus.AVAILABLE;
+
+    // Thêm roomId và liên kết Room
+    @Column(name = "room_id", insertable = false, updatable = false)
+    private Long roomId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+
     private int created_by;
     private int updated_by;
     private Date created_at;
     private Date updated_at;
-    private int status;
 
-    @Column(name = "room_id")
-    private Long roomId;
+    // ----------------- Getter & Setter -----------------
 
-    // Getter và Setter
     public Long getId() {
         return id;
     }
@@ -49,14 +59,6 @@ public class Seat {
         this.seatNumber = seatNumber;
     }
 
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
-
     public SeatType getSeatType() {
         return seatType;
     }
@@ -71,6 +73,30 @@ public class Seat {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public SeatStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SeatStatus status) {
+        this.status = status;
+    }
+
+    public Long getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 
     public int getCreated_by() {
@@ -104,13 +130,4 @@ public class Seat {
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
     }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
 }

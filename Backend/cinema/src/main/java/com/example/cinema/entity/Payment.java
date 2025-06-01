@@ -3,10 +3,6 @@ package com.example.cinema.entity;
 import jakarta.persistence.*;
 import java.util.Date;
 
-//////////////////////////////////////
-////Thanh toán
-//////////////////////////////////////
-
 @Entity
 @Table(name = "payment")
 public class Payment {
@@ -20,6 +16,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private double amount;
     private int created_by;
     private int updated_by;
@@ -31,10 +28,15 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    @Column(name = "ticket_id")
-    private Long ticketId;
+    // Liên kết với SeatBooking
+    @Column(name = "seat_booking_id")
+    private Long seatBookingId;
 
-    // ====== Getters and Setters ======
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_booking_id", insertable = false, updatable = false)
+    private SeatBooking seatBooking;
+
+    // ---------- Getter & Setter ----------
 
     public Long getId() {
         return id;
@@ -44,44 +46,12 @@ public class Payment {
         this.id = id;
     }
 
-    public Long getTicketId() {
-        return ticketId;
-    }
-
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
-    }
-
-    public PaymentMethod getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public Date getPaymentTime() {
-        return paymentTime;
-    }
-
-    public void setPaymentTime(Date paymentTime) {
-        this.paymentTime = paymentTime;
-    }
-
     public double getAmount() {
         return amount;
     }
 
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public String getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
     }
 
     public int getCreated_by() {
@@ -114,5 +84,45 @@ public class Payment {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public Date getPaymentTime() {
+        return paymentTime;
+    }
+
+    public void setPaymentTime(Date paymentTime) {
+        this.paymentTime = paymentTime;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public Long getSeatBookingId() {
+        return seatBookingId;
+    }
+
+    public void setSeatBookingId(Long seatBookingId) {
+        this.seatBookingId = seatBookingId;
+    }
+
+    public SeatBooking getSeatBooking() {
+        return seatBooking;
+    }
+
+    public void setSeatBooking(SeatBooking seatBooking) {
+        this.seatBooking = seatBooking;
     }
 }

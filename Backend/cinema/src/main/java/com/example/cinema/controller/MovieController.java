@@ -3,7 +3,9 @@ package com.example.cinema.controller;
 import com.example.cinema.entity.Movie;
 import com.example.cinema.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -48,6 +50,12 @@ public class MovieController {
     @DeleteMapping("/{id}")
     public void deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
+    }
+
+    @GetMapping("/show/{id}")
+    public ResponseEntity<Movie> show(@PathVariable Long id, HttpServletRequest request) {
+        // Kiểm tra quyền truy cập nếu cần
+        return ResponseEntity.ok(movieService.findById(id));
     }
 
 }
