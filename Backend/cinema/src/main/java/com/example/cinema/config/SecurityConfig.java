@@ -2,7 +2,6 @@ package com.example.cinema.config;
 
 import com.example.cinema.security.JWTFilter;
 import com.example.cinema.service.impl.CustomUserDetailsService;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,7 +41,6 @@ public class SecurityConfig {
         return new CorsFilter(source);
     }
 
-    // Cấu hình cách xác thực: sử dụng CustomUserDetailsService và mã hoá password
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -51,26 +49,23 @@ public class SecurityConfig {
         return provider;
     }
 
-    // AuthenticationManager để sử dụng khi login
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // PasswordEncoder: dùng BCrypt để mã hoá mật khẩu
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // QUAN TRỌNG: cấu hình chính các rule bảo mật
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowCredentials(true);
-                    config.addAllowedOrigin("http://localhost:3000");
+                    config.addAllowedOriginPattern("http://localhost:3000");
                     config.addAllowedHeader("*");
                     config.addAllowedMethod("*");
                     return config;
@@ -78,11 +73,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**",
-                                "/images/**", "/api/auth/register", "/user-uploads/**", "/api/genres/**",
-                                "/api/age-ratings/**", "/api/countries/**", "/api/movies/**", "/api/branches/**",
-                                "/api/payment/**", "/api/seats/**", "/api/bookings/**", "/api/seats",
-                                "/api/auth/login")
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/seats", "/api/seats/**",
+                                "/api/movies/**",
+                                "/api/genres/**",
+                                "/api/age-ratings/**",
+                                "/api/countries/**",
+                                "/api/branches/**",
+                                "/api/payment/**",
+                                "/images/**",
+                                "/user-uploads/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())

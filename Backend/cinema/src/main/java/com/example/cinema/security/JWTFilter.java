@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,12 +31,10 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // Lấy token từ header Authorization
         final String authHeader = request.getHeader("Authorization");
         String token = null;
         String email = null;
 
-        // Kiểm tra nếu header chứa Bearer token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             email = jwtUtil.extractUsername(token);
@@ -52,5 +51,21 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    // ✅ Bỏ qua filter với các URL public
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/api/auth")
+                || path.startsWith("/api/seats")
+                || path.startsWith("/api/movies")
+                || path.startsWith("/api/age-ratings")
+                || path.startsWith("/api/countries")
+                || path.startsWith("/api/branches")
+                || path.startsWith("/api/payment")
+                || path.startsWith("/user-uploads")
+                || path.startsWith("/images");
     }
 }

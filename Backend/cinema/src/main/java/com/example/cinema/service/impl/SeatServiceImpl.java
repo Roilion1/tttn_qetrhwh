@@ -1,5 +1,6 @@
 package com.example.cinema.service.impl;
 
+import com.example.cinema.dto.request.SeatDTO;
 import com.example.cinema.entity.Room;
 import com.example.cinema.entity.Seat;
 import com.example.cinema.repository.RoomRepository;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SeatServiceImpl implements SeatService {
@@ -16,9 +18,30 @@ public class SeatServiceImpl implements SeatService {
     @Autowired
     private SeatRepository seatRepository;
 
+    // @Override
+    // public List<Seat> getAllSeats() {
+    // return seatRepository.findAll();
+    // }
+
     @Override
-    public List<Seat> getAllSeats() {
-        return seatRepository.findAll();
+    public List<SeatDTO> getAllSeats() {
+        List<Seat> seats = seatRepository.findAll();
+        return seats.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public SeatDTO convertToDTO(Seat seat) {
+        SeatDTO dto = new SeatDTO();
+        dto.setId(seat.getId());
+        dto.setSeatNumber(seat.getSeatNumber());
+        dto.setSeatType(seat.getSeatType().name());
+        dto.setStatus(seat.getStatus().name());
+        dto.setDescription(seat.getDescription());
+        Room room = seat.getRoom();
+        if (room != null) {
+            dto.setRoomId(room.getId());
+        }
+        return dto;
     }
 
     @Override
@@ -62,15 +85,17 @@ public class SeatServiceImpl implements SeatService {
     private RoomRepository roomRepository; // Thêm RoomRepository
 
     @Override
-    public void addSeat(Seat seat) {
-        // Tìm kiếm Room theo roomId
-        Room room = roomRepository.findById(seat.getRoomId())
+    public void addSeat(SeatDTO seatDto) {
+        // Tìm kiếm Room theo roomId từ DTO
+        Room room = roomRepository.findById(seatDto.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room không tồn tại"));
-
-        // Gán Room cho ghế
-        seat.setRoom(room);
+        // Tạo đối tượng Seat mới
+        Seat seat = new Seat();
+        seat.setSeatNumber(seatDto.getSeatNumber());
+        seat.setSeatType(Seat.SeatType.valueOf(seatDto.getSeatType().toUpperCase()));
+        seat.setDescription(seatDto.getDescription());
         seat.setStatus(Seat.SeatStatus.AVAILABLE);
-
+        seat.setRoom(room); // Gán Room cho ghế
         // Lưu ghế vào cơ sở dữ liệu
         seatRepository.save(seat);
     }

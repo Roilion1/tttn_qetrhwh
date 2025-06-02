@@ -1,5 +1,6 @@
 package com.example.cinema.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.Date;
 
@@ -29,11 +30,9 @@ public class Seat {
     @Enumerated(EnumType.STRING)
     private SeatStatus status = SeatStatus.AVAILABLE;
 
-    // Thêm roomId và liên kết Room
-    @Column(name = "room_id", insertable = false, updatable = false)
-    private Long roomId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" }) // xử lý proxy lỗi
     private Room room;
 
     private int created_by;
@@ -81,14 +80,6 @@ public class Seat {
 
     public void setStatus(SeatStatus status) {
         this.status = status;
-    }
-
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
     }
 
     public Room getRoom() {

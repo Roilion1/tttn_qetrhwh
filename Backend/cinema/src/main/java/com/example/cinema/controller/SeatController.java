@@ -2,10 +2,12 @@ package com.example.cinema.controller;
 
 import com.example.cinema.dto.request.SeatDTO;
 import com.example.cinema.dto.request.SeatReservationRequest;
+import com.example.cinema.entity.Room;
 import com.example.cinema.entity.Seat;
 import com.example.cinema.service.SeatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +22,7 @@ public class SeatController {
     private SeatService seatService;
 
     @GetMapping
-    public List<Seat> getAllSeats() {
+    public List<SeatDTO> getAllSeats() {
         return seatService.getAllSeats();
     }
 
@@ -52,10 +54,12 @@ public class SeatController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addSeat(@RequestBody Seat seat) {
+    public ResponseEntity<?> addSeat(@RequestBody SeatDTO seatDto) {
         try {
-            seatService.addSeat(seat);
+            seatService.addSeat(seatDto); 
             return ResponseEntity.ok("Ghế đã được thêm thành công");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Giá trị seatType hoặc status không hợp lệ");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Lỗi khi thêm ghế: " + e.getMessage());
         }
